@@ -1,0 +1,17 @@
+@import '../../styles/variables';
+
+* {
+    box-sizing: border-box;
+}
+
+.app {
+    width: 80%;
+    margin: 0 auto;
+
+    .posts {
+        .post {
+            padding: $padding-large;
+            margin: $margin-medium;
+        }
+    }
+}

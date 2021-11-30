@@ -4,9 +4,12 @@
     box-sizing: border-box;
 }
 
+body {
+    background-color: $color-main;
+}
+
 .app-ctn {
     width: 100%;
-    height: 100vh;
     background-color: $color-main; 
 
     .app {
@@ -16,7 +19,6 @@
 
         background-color: $color-main;
         width: 100%;
-        height: 100vh;
         margin: 0 auto;
         font-family: $font-main;
 
@@ -70,6 +72,7 @@
                 padding: $padding-medium;
                 .title {
                     font-size: $font-medium;
+                    margin: 0;
                 }
                 .loading {
                     h1 {

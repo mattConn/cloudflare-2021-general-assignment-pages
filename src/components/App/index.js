@@ -1,5 +1,6 @@
 import React from "react";
 import Post from "../Post";
+import PostForm from "../PostForm";
 
 import './index.scss'
 
@@ -10,7 +11,8 @@ class App extends React.Component {
         error: null,
     }
 
-    componentDidMount() {
+    fetchPosts = () => {
+        this.setState({loaded: false})
         fetch(`${process.env.REACT_APP_BACKEND}/posts`)
             .then(resp => resp.json())
             .then(data => this.setState({
@@ -23,14 +25,21 @@ class App extends React.Component {
             })
     }
 
+    componentDidMount() {
+        this.fetchPosts()
+    }
+
     render() {
         return (
             <div className="app-ctn">
                 <div className="app">
                     <div className="header">
-                        <h1 className="title">Flutter<img src="logo.png"/></h1>
+                        <h1 className="title">Flutter<img src="logo.png" /></h1>
                         <p className="subtitle">Short-form Blogging</p>
                     </div>
+
+                    <PostForm postHandler={this.fetchPosts} />
+
                     {
                         this.state.error ?
                             <div className="error">
@@ -42,7 +51,7 @@ class App extends React.Component {
                                     {
                                         !this.state.loaded ?
                                             <div className="loading">
-                                                <h1>Loading...</h1>
+                                                <h1>Updating...</h1>
                                             </div> :
                                             this.state.posts.map(post => {
                                                 return <Post

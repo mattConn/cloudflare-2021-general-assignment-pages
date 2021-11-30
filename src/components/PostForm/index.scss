@@ -1,0 +1,56 @@
+@import '../../styles/variables';
+
+.post-form-ctn {
+    margin-bottom: $margin-small;
+    padding: $padding-medium;
+    background-color: white;
+
+    .post-title {
+        margin: 0;
+        margin-bottom: $margin-medium;
+    }
+
+    .post-form {
+        input, textarea {
+            display: block;
+            margin-bottom: $margin-small;
+            border: solid 1px $color-main;
+            padding: $padding-small;
+            font: $font-main;
+            font-size: $font-small;
+        }
+        textarea {
+            width: 100%;
+            max-width: 550px;
+            resize: none;
+            height: 140px;
+        }
+        .submit-ctn {
+            .submit {
+                @extend %button-reset;
+                background-color: $color-main-dark;
+                color: white;
+                font-size: $font-small;
+                font-family: $font-main;
+                padding: $padding-small;
+                cursor: pointer;
+            }
+            .post-status {
+                margin: 0;
+                margin-left: $margin-small;
+                font-size: $font-small;
+                opacity: 0;
+                transition: .2s;
+            }
+            .status-visible {
+                opacity: 1;
+            }
+            .post-error {
+                color: $color-error;
+            }
+            .submit, .post-status {
+                display: inline-block;
+            }
+        }
+    }
+}

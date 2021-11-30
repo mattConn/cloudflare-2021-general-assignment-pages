@@ -1,6 +1,23 @@
 @import '../../styles/_variables.scss';
 
 .post {
-    border: solid 1px black;
+    border: solid 1px $color-main;
     padding: $padding-small;
+
+    .title-ctn {
+        p {
+            margin: 0;
+            font-size: $font-medium;
+            span {
+                font-size: $font-small;
+            }
+        }
+        margin-bottom: $margin-medium;
+    }
+    .content-ctn {
+        p {
+            margin: 0;
+            font-size: $font-small;
+        }
+    }
 }

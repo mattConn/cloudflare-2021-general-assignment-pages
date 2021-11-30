@@ -5,34 +5,58 @@ import './index.scss'
 
 class App extends React.Component {
     state = {
-        posts: []
+        posts: [],
+        loaded: false,
+        error: null,
     }
 
-    componentDidMount(){
+    componentDidMount() {
         fetch(`${process.env.REACT_APP_BACKEND}/posts`)
-        .then(resp => resp.json())
-        .then(data => this.setState({posts: data}))
-
+            .then(resp => resp.json())
+            .then(data => this.setState({
+                loaded: true,
+                posts: data
+            }))
+            .catch(error => {
+                console.log(error)
+                this.setState({ error: 'Could not fetch posts.' })
+            })
     }
 
     render() {
         return (
-            <div className="app">
-                <div className="header">
-                    <h1>Flutter</h1>
-                </div>
-                <div className="posts">
+            <div className="app-ctn">
+                <div className="app">
+                    <div className="header">
+                        <h1 className="title">Flutter<img src="logo.png"/></h1>
+                        <p className="subtitle">Short-form Blogging</p>
+                    </div>
                     {
-                        this.state.posts.map(post => {
-                            return <Post
-                                title={post.title}
-                                username={post.username}
-                                content={post.content}
-                            />
-                        })
+                        this.state.error ?
+                            <div className="error">
+                                <h1>Something went wrong. <span onClick={() => window.location.reload()}>Retry</span></h1>
+                            </div> :
+                            <div className="posts-ctn">
+                                <div className="posts">
+                                    <h1 className="title">Latest Posts</h1>
+                                    {
+                                        !this.state.loaded ?
+                                            <div className="loading">
+                                                <h1>Loading...</h1>
+                                            </div> :
+                                            this.state.posts.map(post => {
+                                                return <Post
+                                                    title={post.title}
+                                                    username={post.username}
+                                                    content={post.content}
+                                                />
+                                            })
+                                    }
+                                </div>
+                            </div>
                     }
-                </div>
 
+                </div>
             </div>
         )
     }

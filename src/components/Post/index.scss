@@ -15,9 +15,19 @@
         margin-bottom: $margin-medium;
     }
     .content-ctn {
+        margin-bottom: $margin-small;
         p {
             margin: 0;
             font-size: $font-small;
+        }
+    }
+    .likes {
+        margin: 0;
+        cursor: pointer;
+        display: inline-block;
+        img {
+            margin-right: $margin-small;
+            width: 13px;
         }
     }
 }

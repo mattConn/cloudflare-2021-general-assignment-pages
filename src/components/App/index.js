@@ -7,22 +7,82 @@ import './index.scss'
 class App extends React.Component {
     state = {
         posts: [],
+        postReactions: {},
         loaded: false,
         error: null,
     }
 
+    updateReactions = (title, username, inc) => {
+        const postReactions = this.state.postReactions
+        postReactions[username][title] += inc
+        this.setState({postReactions: postReactions})
+    }
+
+    likeHandler = (title, username) => {
+        this.updateReactions(title,username,1)
+        fetch(`${process.env.REACT_APP_BACKEND}/like`, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                title: title,
+                username: username
+            })
+        })
+            .then(resp => {
+                if (resp.status != 200) {
+                    this.updateReactions(title,username,-1)
+                    return resp.text()
+                } else {
+                    return null
+                }
+            })
+            .then(message => {
+                if (message) {
+                    throw new Error(message)
+                }
+            })
+            .catch(error => {
+                this.updateReactions(title,username,-1)
+                console.log(error)
+            })
+    }
+
     fetchPosts = () => {
-        this.setState({loaded: false})
+        this.setState({ loaded: false })
         fetch(`${process.env.REACT_APP_BACKEND}/posts`)
             .then(resp => resp.json())
-            .then(data => this.setState({
-                loaded: true,
-                posts: data
-            }))
+            .then(data => {
+                this.setState({
+                    posts: data.sort((a,b) => b.likes - a.likes)
+                })
+
+                // postReactions schema
+                // ====================
+                // {
+                //     username: {
+                //         title: likes,
+                //     },
+                // }
+                const postReactions = {}
+                this.state.posts.forEach(post => {
+                    if(postReactions.hasOwnProperty(post.username)){
+                        postReactions[post.username][post.title] = post.likes
+                    } else {
+                        postReactions[post.username] = {[post.title]: post.likes} 
+                    }
+                })
+                this.setState({ 
+                    postReactions: postReactions,
+                    loaded: true
+                })
+            })
             .catch(error => {
                 console.log(error)
                 this.setState({ error: 'Could not fetch posts.' })
             })
+
     }
 
     componentDidMount() {
@@ -54,10 +114,13 @@ class App extends React.Component {
                                                 <h1>Updating...</h1>
                                             </div> :
                                             this.state.posts.map(post => {
+                                                const likes = this.state.postReactions[post.username][post.title]
                                                 return <Post
                                                     title={post.title}
                                                     username={post.username}
                                                     content={post.content}
+                                                    likes={likes}
+                                                    likeHandler={() => this.likeHandler(post.title, post.username)}
                                                 />
                                             })
                                     }

@@ -41,8 +41,6 @@ class App extends React.Component {
     }
 
     fetchPosts = () => {
-        console.log("${process.env.REACT_APP_BACKEND}/posts",`${process.env.REACT_APP_BACKEND}/posts`)
-
         fetch(`${process.env.REACT_APP_BACKEND}/posts`)
             .then(resp => resp.json())
             .then(data => {

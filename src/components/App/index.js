@@ -7,19 +7,11 @@ import './index.scss'
 class App extends React.Component {
     state = {
         posts: [],
-        postReactions: {},
         loaded: false,
         error: null,
     }
 
-    updateReactions = (title, username, inc) => {
-        const postReactions = this.state.postReactions
-        postReactions[username][title] += inc
-        this.setState({postReactions: postReactions})
-    }
-
     likeHandler = (title, username) => {
-        this.updateReactions(title,username,1)
         fetch(`${process.env.REACT_APP_BACKEND}/like`, {
             method: 'POST',
             headers: {
@@ -32,9 +24,9 @@ class App extends React.Component {
         })
             .then(resp => {
                 if (resp.status != 200) {
-                    this.updateReactions(title,username,-1)
                     return resp.text()
                 } else {
+                    this.fetchPosts()
                     return null
                 }
             })
@@ -44,37 +36,16 @@ class App extends React.Component {
                 }
             })
             .catch(error => {
-                this.updateReactions(title,username,-1)
                 console.log(error)
             })
     }
 
     fetchPosts = () => {
-        this.setState({ loaded: false })
         fetch(`${process.env.REACT_APP_BACKEND}/posts`)
             .then(resp => resp.json())
             .then(data => {
                 this.setState({
-                    posts: data.sort((a,b) => b.likes - a.likes)
-                })
-
-                // postReactions schema
-                // ====================
-                // {
-                //     username: {
-                //         title: likes,
-                //     },
-                // }
-                const postReactions = {}
-                this.state.posts.forEach(post => {
-                    if(postReactions.hasOwnProperty(post.username)){
-                        postReactions[post.username][post.title] = post.likes
-                    } else {
-                        postReactions[post.username] = {[post.title]: post.likes} 
-                    }
-                })
-                this.setState({ 
-                    postReactions: postReactions,
+                    posts: data.sort((a,b) => b.likes - a.likes),
                     loaded: true
                 })
             })
@@ -107,19 +78,18 @@ class App extends React.Component {
                             </div> :
                             <div className="posts-ctn">
                                 <div className="posts">
-                                    <h1 className="title">Latest Posts</h1>
+                                    <h1 className="title">Most Popular</h1>
                                     {
                                         !this.state.loaded ?
                                             <div className="loading">
                                                 <h1>Updating...</h1>
                                             </div> :
                                             this.state.posts.map(post => {
-                                                const likes = this.state.postReactions[post.username][post.title]
                                                 return <Post
                                                     title={post.title}
                                                     username={post.username}
                                                     content={post.content}
-                                                    likes={likes}
+                                                    likes={post.likes}
                                                     likeHandler={() => this.likeHandler(post.title, post.username)}
                                                 />
                                             })
